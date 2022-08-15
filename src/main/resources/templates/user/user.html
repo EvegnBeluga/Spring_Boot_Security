@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <table border="1">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Age</th>
+        </tr>
+        <tr>
+            <td th:text="${userToShow.get().getId()}"></td>
+            <td th:text="${userToShow.get().getName()}"></td>
+            <td th:text="${userToShow.get().getEmail()}"></td>
+            <td th:text="${userToShow.get().getAge()}"></td>
+        </tr>
+    </table>
+
+</div>
+<hr/>
+<a href="/logout">LOGOUT</a>
+<!--<a th:href="@{/admin/{id}/update(id=${userToShow.getId()})}">Update User</a>-->
+<hr/>
+</body>
+</html>

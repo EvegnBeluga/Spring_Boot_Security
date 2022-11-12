@@ -11,12 +11,12 @@ import ru.kata.spring.boot_security.demo.repositpries.UserRepository;
 import java.util.Optional;
 
 @Service
-public class UserDetailsServiceIml implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
     @Autowired
-    public UserDetailsServiceIml(UserRepository userRepository) {
+    public UserDetailsServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

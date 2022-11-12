@@ -1,9 +1,8 @@
 package ru.kata.spring.boot_security.demo.models;
 
-
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,17 +18,20 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+@Data
 @Entity
-@Table(name = "User")
+@Table(name = "Users")
 public class User implements UserDetails {
-
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "lastname")
+    private String lastName;
 
     @Column(name = "email", unique = true)
     private String email;
@@ -40,21 +42,26 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
+   // private String roles;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(name = "roles_users",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
-    private Set<Role> roles;
+            joinColumns = {@JoinColumn(name = "users_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "roles_id", referencedColumnName = "id")})
+
+    private Set<Role> roles = new HashSet<>();
 
     public User() {
 
     }
 
-    public User(String name, String email, int age) {
+    public User(String name, String lastName, String email, int age) {
         this.name = name;
+        this.lastName = lastName;
         this.email = email;
         this.age = age;
     }
+
 
     public void setPassword(String password) {
         this.password = password;
@@ -64,50 +71,31 @@ public class User implements UserDetails {
         return roles;
     }
 
+    public String getRoleNames() {
+        StringBuilder sb = new StringBuilder();
+        for (Role role : roles) {
+
+            sb.append(role.getCutedRoleName()).append(", ");
+        }
+        String result = sb.toString().trim();
+
+        return result.substring(0, result.length() - 1);
+
+    }
+
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
     public void addRole(Role role) {
+
         if (roles == null) {
             roles = new HashSet<>();
+        } else {
+            roles.add(role);
         }
-        roles.add(role);
     }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
@@ -148,13 +136,18 @@ public class User implements UserDetails {
                 isAccountNonExpired(), isCredentialsNonExpired(), isAccountNonLocked(), getRoles());
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", age=" + age +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "User{" +
+//                "id=" + id +
+//                ", name='" + name + '\'' +
+//                ", lastName='" + lastName + '\'' +
+//                ", email='" + email + '\'' +
+//                ", age=" + age +
+//                ", password='" + password + '\'' +
+//                ", role='" + role + '\'' +
+//                ", roles=" + roles +
+//                '}';
+//    }
+
 }

@@ -49,7 +49,7 @@ public class User implements UserDetails {
             joinColumns = {@JoinColumn(name = "users_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "roles_id", referencedColumnName = "id")})
 
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> roles;
 
     public User() {
 
@@ -60,6 +60,7 @@ public class User implements UserDetails {
         this.lastName = lastName;
         this.email = email;
         this.age = age;
+        //this.password = password;
     }
 
 
@@ -90,10 +91,11 @@ public class User implements UserDetails {
 
     public void addRole(Role role) {
 
-        if (roles == null) {
-            roles = new HashSet<>();
-        } else {
+        if (roles != null) {
+           // roles = new HashSet<>();
             roles.add(role);
+        } else {
+            roles = new HashSet<>();
         }
     }
     @Override
@@ -136,18 +138,16 @@ public class User implements UserDetails {
                 isAccountNonExpired(), isCredentialsNonExpired(), isAccountNonLocked(), getRoles());
     }
 
-//    @Override
-//    public String toString() {
-//        return "User{" +
-//                "id=" + id +
-//                ", name='" + name + '\'' +
-//                ", lastName='" + lastName + '\'' +
-//                ", email='" + email + '\'' +
-//                ", age=" + age +
-//                ", password='" + password + '\'' +
-//                ", role='" + role + '\'' +
-//                ", roles=" + roles +
-//                '}';
-//    }
-
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", age=" + age +
+                ", password='" + password + '\'' +
+                ", roles=" + roles +
+                '}';
+    }
 }

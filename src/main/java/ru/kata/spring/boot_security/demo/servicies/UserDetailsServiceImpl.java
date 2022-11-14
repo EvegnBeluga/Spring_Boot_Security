@@ -9,7 +9,6 @@ import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.repositpries.UserRepository;
 
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -27,6 +26,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (user.isPresent()) {
             return user.get().getUserDetails();
         }
-        throw new UsernameNotFoundException("no user \"" + username + "\" found");
+        throw new UsernameNotFoundException("no such user");
     }
 }

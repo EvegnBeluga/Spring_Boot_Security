@@ -1,8 +1,9 @@
 package ru.kata.spring.boot_security.demo.models;
 
-import lombok.Data;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,42 +15,51 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
 @Entity
 @Table(name = "Users")
 public class User implements UserDetails {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "name")
+    @NotEmpty(message = "Имя не должно быть пустым!")
+    @Size(min = 2, max = 100, message = "Имя должно быть от 2 до 100 символов!")
     private String name;
 
     @Column(name = "lastname")
+    @NotEmpty(message = "Фамилия не должны быть пустой!")
+    @Size(min = 2, max = 100, message = "Фамилия должна быть от 2 до 100 символов!")
     private String lastName;
 
     @Column(name = "email", unique = true)
+    @Email(message = "Email должен быть почтой!")
+    @NotEmpty(message = "Email не должен быть пустым!")
     private String email;
 
     @Column(name = "age")
+    @Min(value = 0, message = "Возвраст не должен быть отрицательным!")
     private int age;
 
     @Column(name = "password")
     private String password;
 
-   // private String roles;
-
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(name = "roles_users",
-            joinColumns = {@JoinColumn(name = "users_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "roles_id", referencedColumnName = "id")})
-
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private Set<Role> roles;
+
 
     public User() {
 
@@ -60,7 +70,6 @@ public class User implements UserDetails {
         this.lastName = lastName;
         this.email = email;
         this.age = age;
-        //this.password = password;
     }
 
 
@@ -75,11 +84,10 @@ public class User implements UserDetails {
     public String getRoleNames() {
         StringBuilder sb = new StringBuilder();
         for (Role role : roles) {
-
-            sb.append(role.getCutedRoleName()).append(", ");
+            String s = role.getCutedRoleName();
+            sb.append(s).append(", ");
         }
         String result = sb.toString().trim();
-
         return result.substring(0, result.length() - 1);
 
     }
@@ -89,15 +97,53 @@ public class User implements UserDetails {
     }
 
 
-    public void addRole(Role role) {
+    public Long getId() {
+        return id;
+    }
 
-        if (roles != null) {
-           // roles = new HashSet<>();
-            roles.add(role);
-        } else {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void addRole(Role role) {
+        if (roles == null) {
             roles = new HashSet<>();
         }
+        roles.add(role);
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
@@ -143,11 +189,8 @@ public class User implements UserDetails {
         return "User{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", age=" + age +
-                ", password='" + password + '\'' +
-                ", roles=" + roles +
                 '}';
     }
 }

@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.servicies;
 
+
 import ru.kata.spring.boot_security.demo.models.User;
 
 import java.util.List;
@@ -15,5 +16,7 @@ public interface AdminService {
     User getUserById(Long id);
 
     void updateUser(User userToUpdate);
+
+    User findByEmail(String email);
 
 }

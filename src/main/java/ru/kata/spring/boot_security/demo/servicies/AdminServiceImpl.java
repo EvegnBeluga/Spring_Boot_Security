@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.repositpries.UserRepository;
+import ru.kata.spring.boot_security.demo.util.exceptions.UserNotFoundException;
 
 import java.util.List;
 
@@ -30,6 +31,11 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<User> showUsers() {
         return userRepository.findAll();
@@ -37,19 +43,25 @@ public class AdminServiceImpl implements AdminService{
 
     @Override
     public void deleteUserById(Long id) {
-        userRepository.deleteById(id);
+        if (userRepository.findById(id).isPresent()){
+            userRepository.deleteById(id);
+        }
     }
 
     @Override
     @Transactional(readOnly = true)
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
     public void updateUser(User userToUpdate) {
+        if (userToUpdate.getPassword().trim().equals("")) {
+            userToUpdate.setPassword(userRepository.findById(userToUpdate.getId()).get().getPassword());
+        } else {
+            userToUpdate.setPassword(passwordEncoder.encode(userToUpdate.getPassword()));
+        }
         userRepository.save(userToUpdate);
     }
-
 
 }
